@@ -41,6 +41,12 @@
 
     <style>
 
+
+      .form-layout {
+        border-radius: 20px;
+        width: 500px;
+    }
+
       .badge {
         padding-left: 9px;
         padding-right: 9px;
@@ -48,7 +54,7 @@
         -moz-border-radius: 9px;
         border-radius: 9px;
       }
-
+  
       .label-warning[href],
       .badge-warning[href] {
         background-color: #c67605;
@@ -61,9 +67,7 @@
           vertical-align: top;
           margin-left: -2px; 
       }
-
-
-
+  
       a {
         font-size: 14px;
         font-weight: 700;
@@ -138,21 +142,110 @@
           ><i class="fa-solid fa-shop me-2"></i>
           <strong>BigCorp SHOP</strong></a
         >
-@@ -224,9 +248,20 @@
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNavDropdown"
+          aria-controls="navbarNavDropdown"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="mx-auto my-3 d-lg-none d-sm-block d-xs-block">
+          <div class="input-group">
+            <span class="border-success input-group-text bg-success text-white"
+              ><i class="fa-solid fa-magnifying-glass"></i
+            ></span>
+            <input
+              type="text"
+              class="form-control border-success"
+              style="color: #7a7a7a"
+            />
+            <button class="btn btn-success text-white">Search</button>
+          </div>
+        </div>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+          <div class="ms-auto d-none d-lg-block">
+            <div class="input-group">
+              <span
+                class="border-success input-group-text bg-success text-white"
+                ><i class="fa-solid fa-magnifying-glass"></i
+              ></span>
+              <input
+                type="text"
+                class="form-control border-success"
+                style="color: #7a7a7a"
+              />
+              <button class="btn btn-success text-white">Search</button>
+            </div>
+          </div>
+          <ul class="navbar-nav ms-auto">
+            {% for i in categories %}
+            
+            {% if not i.children.all %}
+              <li class="nav-item">
+                <a class="nav-link" href="{{i.get_absolute_url}}">{{i.name|upper }}</a>
+              </li>
+            {% else %}
+              <li class="nav-item dropdown">
+                <a
+                  class="nav-link dropdown-toggle"
+                  href="{{i.get_absolute_url}}"
+                  id="navbarDropdownMenuLink"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                {{i.name|upper}}
+              </a>
+                <ul
+                  class="dropdown-menu"
+                  aria-labelledby="navbarDropdownMenuLink"
+                >
+                  {% for obj in i.children.all %} {% if not obj.children.all %}
+                    <li><a class="dropdown-item" href="{{obj.get_absolute_url}}">{{obj.name|upper}}</a></li>
+                  {% else %}
+                    <li class="dropdown-submenu">
+                      <a class="dropdown-item dropdown-toggle" href="{{obj.get_absolute_url}}">{{obj.name|upper}}</a>
+                      
+                      <ul class="dropdown-menu">
+                    {% for subobj in obj.children.all %} {% if not subobj.children.all %}
+                        <li>
+                          <a class="dropdown-item" href="{{subobj.get_absolute_url}}">{{subobj.name|upper}}</a>
+                        </li>
+                    {% else %}
+                    <li class="dropdown-submenu">
+                      <a class="dropdown-item dropdown-toggle" href="{{subobj.get_absolute_url}}">{{subobj.name|upper}}</a>
+                      
+                      <ul class="dropdown-menu">
+                        {% for lastobj in subobj.children.all %} 
+                        <li>
+                          <a class="dropdown-item" href="{{lastobj.get_absolute_url}}">{{lastobj.name|upper}}</a>
+                        </li>
+                       {% endfor %}
+                      </ul>
+                    </li>
+                    {% endif %} {% endfor %}
+                  </ul>
+                </li>
+                {% endif %} {% endfor %}
+              </ul>
+            </li>
+            {% endif %} {% endfor %}
           </ul>
           <ul class="navbar-nav ms-auto">
             <li class="nav-item">
               <a class="nav-link mx-2 text-uppercase" href="{% url 'cart:cart-view' %}"
                 > <i class="fa fa-shopping-cart" aria-hidden="true"> </i> Cart
                 <span id="lblCartCount" class="badge badge-warning ">
-
                   {% with cart_qty=cart|length%}
                     {% if cart_qty > 0 %}
                     {{cart_qty}}
                     {% else %}
                       0
                     {% endif %}
-
                   {% endwith %}
                 </span>
                 </a>
@@ -162,7 +255,33 @@
                 ><i class="fa-solid fa-circle-user me-1"></i> Account</a
               >
             </li>
-            
+              {% if request.user.is_authenticated %}
+    
+              <li class="nav-item">
+                <a class="nav-link mx-2 text-uppercase" href="{% url 'account:dashboard' %}"
+                  ><i class="fa-solid fa-circle-user me-1"></i>@{{ user.username }} Account</a
+                >
+              </li>
+
+              <li class="nav-item">
+                <a class="nav-link mx-2 text-uppercase" href="{% url 'account:logout' %}"
+                  ><i class="fa-solid fa-circle-user me-1"></i> Logout</a
+                >
+              </li>
+              {% else %}
+              <li class="nav-item">
+                <a class="nav-link mx-2 text-uppercase" href="{% url 'account:register' %}"
+                  ><i class="fa-solid fa-circle-user me-1"></i> Register</a
+                >
+              </li>
+              <li class="nav-item">
+                <a class="nav-link mx-2 text-uppercase" href="{% url 'account:login' %}"
+                  ><i class="fa-solid fa-circle-user me-1"></i> Login</a
+                >
+              </li>
+              {% endif %}
+
+
           </ul>
         </div>
       </div>

@@ -26,9 +26,10 @@ INSTALLED_APPS = [
     "crispy_bootstrap5",
     "django_email_verification",
     # my apps
+    'account.apps.AccountConfig',
     'shop.apps.ShopConfig',
     'cart.apps.CartConfig',
-    'account.apps.AccountConfig',
+    'payment.apps.PaymentConfig',
 ]
 
 MIDDLEWARE = [

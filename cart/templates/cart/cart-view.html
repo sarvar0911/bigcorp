@@ -1,11 +1,8 @@
 {% include "base.html" %} {% load static %} {% load mathfilters %} {% block content %}
-
 <main class="pt-5">
   <div class="container">
     <h1 class="h5">Shopping cart</h1>
-
     <hr />
-
     {% for item in cart %}
     {% with product=item.product %}
 
@@ -23,7 +20,6 @@
           src="{{product.image.url}}"
         />
       </div>
-
       <div class="col-md-9 col-lg-10 ps-md-3 ps-lg-10">
         <a
           href="{{product.get_absolute_url}}"
@@ -31,40 +27,29 @@
         >
           <h1 class="h5 pt-2">{{product.title}}</h1>
         </a>
-
         <div class="border">
           <div class="col border-bottom">
             <div class="row p-3">
               <div class="col-6">Product</div>
-
               <div class="col-6 text-end">
                 <span class="h6 fw-bold">$ {{ product.price|mul:item.qty}}</span>
               </div>
             </div>
           </div>
-
           <div class="col">
             <div class="row p-3">
               <div class="col-12">
                 <label for="select">Qty</label>
-
                 &nbsp;
-
                 <select id="select{{product.id}}">
                   <option selected>{{item.qty}}</option>
-
                   <option value="">1</option>
-
                   <option value="">2</option>
-
                   <option value="">3</option>
-
                   <option value="">4</option>
                 </select>
-
                 <br />
                 <br />
-
                 <button
                   type="button"
                   data-index="{{product.id}}"
@@ -72,9 +57,7 @@
                 >
                   Update
                 </button>
-
                 &nbsp;
-
                 <button
                   type="button"
                   class="btn btn-danger btn-sm delete-button"
@@ -82,16 +65,24 @@
                 >
                   Delete
                 </button>
-              </div>
+
+
+              </div> 
+
+
             </div>
+
           </div>
+
         </div>
+
       </div>
+
     </div>
 
     {% endwith %}
     {% endfor %}
-
+    
     <div class="col-12 text-end">
       <div class="h6 fw-bold">
         Total: $
@@ -99,18 +90,22 @@
           {{ cart.get_total_price }}
         </div>
       </div>
+      <button
+                  type="button"
+                  class="btn btn-success btn-md text-bg-light mt-4"
+
+                >
+                <a class="nav-link text-decoration-none" href="{% url 'payment:checkout' %}">Checkout</a>
+                </button>
     </div>
   </div>
 
   <br />
   <br />
 </main>
-
 <script>
-
     $(document).on('click', '.delete-button', function(e){
         e.preventDefault();
-
         $.ajax({
             type: 'POST',
             url: '{% url "cart:delete-to-cart" %}',
@@ -122,7 +117,6 @@
             success: function(response){
                 document.getElementById('lblCartCount').textContent = response.qty
                 document.getElementById('total').textContent = response.total
-
                 location.reload()
             },
             error: function(error, status){
@@ -130,12 +124,9 @@
             }
         })
     });
-
     $(document).on('click', '.update-button', function(e){
         e.preventDefault();
-
         var product_id = $(this).data('index')
-
         $.ajax({
             type: 'POST',
             url: '{% url "cart:update-to-cart" %}',
@@ -148,7 +139,6 @@
             success: function(response){
                 document.getElementById('lblCartCount').textContent = response.qty
                 document.getElementById('total').textContent = response.total
-
                 location.reload()
             },
             error: function(error, status){
@@ -156,11 +146,6 @@
             }
         })
     });
-
-
-
-
-
+    
 </script>
-
 {% endblock %}

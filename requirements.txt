@@ -1,0 +1,15 @@
+asgiref==3.8.1
+crispy-bootstrap5==2024.2
+deprecation==2.1.0
+Django==5.1
+django-crispy-forms==2.3
+django-email-verification==0.3.3
+django-environ==0.11.2
+django-mathfilters==1.0.0
+django-restframework==0.0.1
+packaging==24.1
+pillow==10.4.0
+PyJWT==2.9.0
+sqlparse==0.5.1
+tzdata==2024.1
+validators==0.33.0

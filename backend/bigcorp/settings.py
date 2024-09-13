@@ -1,18 +1,20 @@
+from datetime import timedelta
 from pathlib import Path
+
 import environ
 from django.contrib import messages
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+ENV_DIR = Path(__file__).resolve().parent.parent.parent
 
 env = environ.Env()
-
-env.read_env(BASE_DIR / '.env')
+env.read_env(ENV_DIR / '.env')
 
 SECRET_KEY = 'django-insecure-i1-514k9-jk^ptm58#%9dc=tw8-%pd!0!9$goy0m$fnc2m8ln3'
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -31,12 +33,17 @@ INSTALLED_APPS = [
     'django_celery_beat',
     'django_celery_results',
     'django_htmx',
+    'rest_framework',
+    'djoser',
+    'drf_yasg',
+    
     # my apps
     'account.apps.AccountConfig',
     'shop.apps.ShopConfig',
     'cart.apps.CartConfig',
     'payment.apps.PaymentConfig',
     'recommend.apps.RecommendConfig',
+    'api.apps.ApiConfig',
 ]
 
 MIDDLEWARE = [
@@ -74,10 +81,21 @@ TEMPLATES = [
 WSGI_APPLICATION = 'bigcorp.wsgi.application'
 
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": env("POSTGRES_DB"),
+        "USER": env("POSTGRES_USER"),
+        "PASSWORD": env("POSTGRES_PASSWORD"),
+        "HOST": env("POSTGRES_HOST"),
+        "PORT": env("POSTGRES_PORT", default=5432),
     }
 }
 
@@ -106,12 +124,16 @@ USE_I18N = True
 USE_TZ = True
 
 
+#Static files
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'static'
-STATICFILES_DIRS = [BASE_DIR / 'bigcorp' / 'static']
+STATICFILES_DIRS = [
+    BASE_DIR / 'bigcorp' / 'static',
+]
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
 
 MESSAGE_TAGS = {
         messages.DEBUG: 'alert-secondary',
@@ -190,11 +212,37 @@ CELERY_BROKER_URL = 'redis://localhost:6379'
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_RESULT_EXTENDED = True
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
-
-CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers.DatabaseScheduler'
 # CELERY_BEAT_SCHEDULE = {
 #     "simple_task": {
 #         "task": "core.tasks.simple_task",
 #         "schedule": crontab(minute="*/1"),
 #     }
 # }
+
+# REST_FRAMEWORK
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    "DEFAULT_PERMISSION_CLASSES": [
+        "api.permissions.IsAdminOrReadOnly",
+    ],
+    "DEFAULT_PAGINATION_CLASS": "api.pagination.StandardResultsSetPagination",
+    "PAGE_SIZE": 15,
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+}
+
+DJOSER = {
+    "LOGIN_FIELD": "email",
+    "SERIALIZERS": {
+        "user_create": "api.serializers.CustomUserCreateSerializer",
+    },
+    'AUTH_HEADER_TYPES': ('JWT',),
+
+}
